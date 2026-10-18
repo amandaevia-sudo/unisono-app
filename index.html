@@ -1,0 +1,491 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0E0B14">
+<title>Unísono</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* Concepto: columna de móvil centrada, vistas con scroll propio y barra de pestañas fija abajo.
+   Un solo look oscuro a propósito: tinta violeta, superficies elevadas y un acento lima. */
+:root{
+  --bg:#0E0B14; --surface:#1B1626; --line:#2E2740; --fg:#F4F1FA; --muted:#A89FBD;
+  --accent:#C6F432; --on-accent:#0E0B14; --violet:#8B78D6; --violet-deep:#3F3270;
+  --font-display:'Bricolage Grotesque','Trebuchet MS',sans-serif;
+  --font-body:'DM Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  color-scheme:dark;
+}
+html{box-sizing:border-box;height:100%}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;height:100%;background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:15px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+button,input,select{font-family:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.app{height:100%;max-width:430px;margin:0 auto;display:flex;flex-direction:column;position:relative;overflow:hidden;background:var(--bg)}
+.top{height:60px;flex:none;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 0 0 4px}
+.logo{display:flex;align-items:center;gap:6px;font:700 24px var(--font-display);letter-spacing:-.5px;margin:0}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--accent);margin-top:8px}
+h1.t{font:700 26px var(--font-display);letter-spacing:-.5px;margin:0;text-wrap:balance}
+.view{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:14px;padding:0 0 16px}
+.foot{flex:none;padding:10px 0 12px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:24px;overflow:hidden}
+.pad{padding:16px 18px;display:flex;flex-direction:column;gap:14px}
+.photo{height:200px;background:var(--violet-deep);position:relative;display:flex;align-items:center;justify-content:center}
+.initial{font:700 110px var(--font-display);color:#5C4B9E}
+.badge{position:absolute;top:14px;left:14px;background:var(--accent);color:var(--on-accent);font-weight:700;font-size:13px;padding:6px 12px;border-radius:999px}
+.label{font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted)}
+.muted{color:var(--muted);font-size:13px}
+.row{display:flex;align-items:center;gap:12px;min-width:0}
+.col{display:flex;flex-direction:column;min-width:0}
+.name{font:700 28px var(--font-display);letter-spacing:-.5px}
+.strong{font-weight:700;font-size:15px}
+.art{width:44px;height:44px;border-radius:10px;flex:none;display:flex;align-items:center;justify-content:center;color:var(--accent)}
+.av{border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font:700 20px var(--font-display);color:var(--fg)}
+.btn{min-height:52px;border-radius:26px;border:1.5px solid var(--line);background:transparent;font-weight:700;font-size:16px;cursor:pointer;padding:0 20px;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn.small{min-height:44px;padding:0 16px;font-size:14px;border-radius:22px}
+.btn:disabled{opacity:.45;cursor:default}
+.actions{display:flex;gap:14px;align-items:center}
+.actions .btn.primary{flex:1;min-height:60px;border-radius:30px;font-size:17px}
+.round{width:60px;min-height:60px;height:60px;padding:0;border-radius:50%;flex:none}
+.icon-btn{width:44px;height:44px;border-radius:50%;border:0;background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.tabbar{height:72px;flex:none;border-top:1px solid var(--line);display:flex;justify-content:space-around;align-items:center;background:var(--bg)}
+.tab{background:none;border:0;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:4px;min-width:64px;min-height:44px;justify-content:center;font-size:11px;font-weight:500;cursor:pointer;position:relative}
+.tab[aria-current="page"]{color:var(--accent)}
+.count{position:absolute;top:-2px;right:10px;min-width:16px;height:16px;border-radius:8px;background:var(--accent);color:var(--on-accent);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 4px}
+.sw{width:52px;height:44px;border:0;background:transparent;padding:0;display:flex;align-items:center;justify-content:flex-end;cursor:pointer}
+.sw span{width:48px;height:28px;border-radius:14px;background:var(--line);display:flex;align-items:center;justify-content:flex-start;padding:0 3px}
+.sw span i{width:22px;height:22px;border-radius:50%;background:var(--muted);display:block}
+.sw[aria-checked="true"] span{background:var(--accent);justify-content:flex-end}
+.sw[aria-checked="true"] span i{background:var(--on-accent)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:12px;display:flex;align-items:center;gap:12px}
+.panel.hot{border:1.5px solid var(--accent)}
+.list{display:flex;flex-direction:column;gap:10px}
+.chip{display:inline-flex;padding:8px 14px;border-radius:999px;background:var(--surface);border:1px solid var(--line);font-size:14px}
+.pick{width:100%;text-align:left;background:var(--surface);border:1.5px solid var(--line);border-radius:16px;padding:8px 12px;display:flex;align-items:center;gap:12px;cursor:pointer;min-height:60px}
+.pick[aria-pressed="true"]{border-color:var(--accent)}
+.check{margin-left:auto;width:24px;height:24px;border-radius:50%;border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;flex:none;color:var(--on-accent)}
+.pick[aria-pressed="true"] .check{background:var(--accent);border-color:var(--accent)}
+.bars{display:flex;align-items:flex-end;justify-content:center;gap:10px;height:150px;margin:8px 0}
+.bars i{width:22px;border-radius:11px;display:block}
+.sel{width:100%;min-height:44px;border-radius:14px;border:1.5px solid var(--line);background:var(--surface);padding:0 12px;font-size:15px}
+.msgs{display:flex;flex-direction:column;gap:10px}
+.bub{max-width:78%;padding:10px 14px;font-size:15px;line-height:1.4;overflow-wrap:anywhere}
+.bub.them{align-self:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:18px 18px 18px 6px}
+.bub.me{align-self:flex-end;background:var(--accent);color:var(--on-accent);border-radius:18px 18px 6px 18px}
+.sys{align-self:center;display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:8px 14px;font-size:12px;color:var(--muted)}
+.chatform{display:flex;gap:10px;align-items:center}
+.chatform input{flex:1;min-width:0;height:44px;border-radius:22px;border:1.5px solid var(--line);background:var(--surface);padding:0 16px;font-size:15px}
+.overlay{position:absolute;inset:0;z-index:20;background:var(--accent);color:var(--on-accent);display:flex;flex-direction:column;padding:12px 8px 20px;animation:pop .35s ease-out}
+.overlay .btn{border-color:var(--on-accent)}
+.overlay .btn.dark{background:var(--on-accent);color:var(--accent)}
+.overlay .btn.ghost{border:0;text-decoration:underline;color:var(--on-accent)}
+@keyframes pop{from{opacity:0;transform:scale(.98)}to{opacity:1;transform:none}}
+.toast{position:absolute;left:50%;bottom:84px;transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:999px;font-size:14px;font-weight:500;z-index:30;max-width:90%;text-align:center}
+.note{font-size:12px;color:var(--muted);text-align:center;line-height:1.4}
+.empty{text-align:center;padding:32px 16px;display:flex;flex-direction:column;align-items:center;gap:12px;color:var(--muted)}
+.empty b{color:var(--fg);font:700 20px var(--font-display)}
+@media (prefers-reduced-motion:reduce){.overlay{animation:none}}
+</style>
+
+<style>body{margin:0}html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}[hidden]{display:none!important}</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+
+<script>
+(function () {
+  /* ---------- Datos de ejemplo (canciones y personas inventadas) ---------- */
+  var A = {
+    a1: { n: 'Marea Baja', g: ['indie pop', 'dream pop'], c: '#3B2F66' },
+    a2: { n: 'Sala Cuarzo', g: ['synth-pop', 'electrónica'], c: '#1F4D4A' },
+    a3: { n: 'Pájaro Eléctrico', g: ['indie rock', 'garage'], c: '#5C2A3E' },
+    a4: { n: 'Los Faroles', g: ['folk', 'indie folk'], c: '#4A4A1F' },
+    a5: { n: 'Verano Eterno', g: ['surf rock', 'indie rock'], c: '#1F3F5C' },
+    a6: { n: 'Nube Roja', g: ['hip hop', 'r&b'], c: '#5C3A1F' },
+    a7: { n: 'Calle Norte', g: ['hip hop', 'jazz'], c: '#2F2F4F' },
+    a8: { n: 'Ámbar', g: ['r&b', 'soul'], c: '#5C4A1F' },
+    a9: { n: 'Doble Cero', g: ['techno', 'electrónica'], c: '#2A2A2A' },
+    a10: { n: 'Brisa Lenta', g: ['dream pop', 'ambient'], c: '#2F4F4A' },
+    a11: { n: 'Tren Nocturno', g: ['post-punk', 'indie rock'], c: '#4F2F2F' },
+    a12: { n: 'Luna de Papel', g: ['folk', 'cantautor'], c: '#3F4F2F' }
+  };
+  var SONGS = {
+    s1: ['Costa Norte', 'a1'], s2: ['Faros en Agosto', 'a1'],
+    s3: ['Luz de Neón', 'a2'], s4: ['Pista Vacía', 'a2'],
+    s5: ['Vuelo Corto', 'a3'], s6: ['Chispa', 'a3'],
+    s7: ['Domingo Tarde', 'a4'], s8: ['Camino de Tierra', 'a4'],
+    s9: ['Autopista', 'a5'], s10: ['Ola Grande', 'a5'],
+    s11: ['Papel y Fuego', 'a6'], s12: ['Madrugada 4:00', 'a6'],
+    s13: ['Barrio Alto', 'a7'], s14: ['Cinta Gastada', 'a7'],
+    s15: ['Miel', 'a8'], s16: ['Sin Prisa', 'a8'],
+    s17: ['Bucle', 'a9'], s18: ['Nave Nodriza', 'a9'],
+    s19: ['Neblina', 'a10'], s20: ['Marea Alta', 'a10'],
+    s21: ['Vía Muerta', 'a11'], s22: ['Última Línea', 'a11'],
+    s23: ['Carta sin Sello', 'a12'], s24: ['Café Frío', 'a12']
+  };
+  var PEOPLE = [
+    { id: 'p1', n: 'Lucía', age: 27, job: 'Diseñadora', c: '#3F3270', back: true, picks: ['s1', 's3', 's5', 's19', 's7'] },
+    { id: 'p2', n: 'Mateo', age: 29, job: 'Técnico de sonido', c: '#1F4D4A', back: true, picks: ['s1', 's17', 's3', 's21', 's9'] },
+    { id: 'p3', n: 'Irene', age: 26, job: 'Veterinaria', c: '#5C2A3E', back: false, picks: ['s7', 's23', 's24', 's2', 's8'] },
+    { id: 'p4', n: 'Dani', age: 31, job: 'Cocinero', c: '#4A4A1F', back: true, picks: ['s5', 's6', 's21', 's22', 's9'] },
+    { id: 'p5', n: 'Sofía', age: 25, job: 'Fotógrafa', c: '#1F3F5C', back: true, picks: ['s19', 's20', 's1', 's15', 's3'] },
+    { id: 'p6', n: 'Marcos', age: 30, job: 'Profesor', c: '#5C3A1F', back: false, picks: ['s11', 's13', 's14', 's16', 's12'] },
+    { id: 'p7', n: 'Carmen', age: 28, job: 'Arquitecta', c: '#2F4F4A', back: true, picks: ['s15', 's16', 's19', 's2', 's23'] },
+    { id: 'p8', n: 'Hugo', age: 32, job: 'Productor', c: '#4F2F2F', back: true, picks: ['s17', 's18', 's3', 's4', 's6'] }
+  ];
+  /* Quién escuchó qué cerca: pid, canción, hace cuántos minutos, distancia aproximada en metros */
+  var EVENTS = [
+    { p: 'p2', s: 's1', m: 0, d: 500 }, { p: 'p3', s: 's2', m: 20, d: 1000 },
+    { p: 'p5', s: 's1', m: 5, d: 800 }, { p: 'p4', s: 's5', m: 0, d: 600 },
+    { p: 'p8', s: 's3', m: 2, d: 400 }, { p: 'p1', s: 's3', m: 35, d: 1200 },
+    { p: 'p7', s: 's15', m: 0, d: 900 }, { p: 'p6', s: 's11', m: 10, d: 700 }
+  ];
+  var REPLIES = ['¡Qué bien! Cuéntame más.', 'Ja, ¿y cuál es el mejor concierto al que has ido?', 'Me encanta esa idea. ¿Cuándo te va bien?', 'Eso mismo iba a decir yo.'];
+
+  /* ---------- Estado ---------- */
+  var KEY = 'unisono-demo-v1';
+  function defaults() {
+    return { screen: 'onboard', picks: [], spotify: false, visible: true, share: true, now: 's1',
+      liked: [], passed: [], matches: [], chat: null, overlay: null, draft: [], pickMode: 'onboard' };
+  }
+  var S = defaults();
+  try { var raw = localStorage.getItem(KEY); if (raw) S = Object.assign(defaults(), JSON.parse(raw)); } catch (e) {}
+  S.overlay = null;
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+
+  /* ---------- Utilidades ---------- */
+  function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function person(id) { return PEOPLE.filter(function (p) { return p.id === id; })[0]; }
+  function artistOf(sid) { return SONGS[sid][1]; }
+  function uniq(a) { return a.filter(function (x, i) { return a.indexOf(x) === i; }); }
+  function jac(a, b) {
+    var u = uniq(a.concat(b)); if (!u.length) return 0;
+    var i = a.filter(function (x) { return b.indexOf(x) >= 0; }); return uniq(i).length / u.length;
+  }
+  function genresOf(arts) { var g = []; arts.forEach(function (a) { g = g.concat(A[a].g); }); return uniq(g); }
+  /* Misma fórmula que el esquema SQL: 50% artistas, 30% canciones, 20% géneros */
+  function affinity(mine, theirs) {
+    var ma = uniq(mine.map(artistOf)), ta = uniq(theirs.map(artistOf));
+    return Math.round(100 * (0.5 * jac(ma, ta) + 0.3 * jac(mine, theirs) + 0.2 * jac(genresOf(ma), genresOf(ta))));
+  }
+  function shared(mine, theirs) {
+    var tr = mine.filter(function (s) { return theirs.indexOf(s) >= 0; });
+    var ma = uniq(mine.map(artistOf)), ta = uniq(theirs.map(artistOf));
+    var trArt = tr.map(artistOf);
+    var ar = ma.filter(function (a) { return ta.indexOf(a) >= 0 && trArt.indexOf(a) < 0; });
+    return { tracks: tr, artists: ar };
+  }
+  function dist(d) { return d >= 1000 ? '~' + (d / 1000) + ' km' : '~' + d + ' m'; }
+
+  var IC = {
+    ring: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.5"/></svg>',
+    heart: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.500-7 10-7 10z"/></svg>',
+    pin: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-6-5.5-6-11a6 6 0 0 1 12 0c0 5.5-6 11-6 11z"/><circle cx="12" cy="10" r="2.2"/></svg>',
+    chat: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M5 5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H11l-5 4v-4H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/></svg>',
+    user: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg>',
+    x: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+    back: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>',
+    eq: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M5 18v-6M10 18V6M15 18v-9M20 18v-4"/></svg>',
+    send: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
+    check: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg>'
+  };
+  function art(sid) { return '<div class="art" style="background:' + A[artistOf(sid)].c + '">' + IC.ring + '</div>'; }
+  function av(p, size) { return '<div class="av" style="width:' + size + 'px;height:' + size + 'px;background:' + p.c + ';font-size:' + Math.round(size * 0.42) + 'px" aria-hidden="true">' + esc(p.n[0]) + '</div>'; }
+  function trackRow(sid, sub) {
+    return '<div class="row">' + art(sid) + '<div class="col"><span class="strong">' + esc(SONGS[sid][0]) + '</span><span class="muted">' + esc(sub || A[artistOf(sid)].n) + '</span></div></div>';
+  }
+  function sw(act, on, label) { return '<button class="sw" role="switch" aria-checked="' + on + '" aria-label="' + esc(label) + '" data-act="' + act + '"><span><i></i></span></button>'; }
+
+  /* ---------- Vistas ---------- */
+  function top(right, left) {
+    return '<header class="top">' + (left || '<h1 class="logo">unísono<span class="dot"></span></h1>') + (right || '') + '</header>';
+  }
+
+  function vOnboard() {
+    var h = [38, 70, 112, 84, 130, 64, 100];
+    var cols = ['#3F3270', '#5C4B9E', '#C6F432', '#5C4B9E', '#C6F432', '#3F3270', '#5C4B9E'];
+    var bars = h.map(function (x, i) { return '<i style="height:' + x + 'px;background:' + cols[i] + '"></i>'; }).join('');
+    return '<div class="view" style="padding-top:12px">' +
+      '<h1 class="logo">unísono<span class="dot"></span></h1>' +
+      '<div class="bars" aria-hidden="true">' + bars + '</div>' +
+      '<h1 class="t" style="font-size:38px;line-height:1.05;letter-spacing:-1px">Tu música dice más que tu bio.</h1>' +
+      '<p style="margin:0;color:var(--muted);line-height:1.5;font-size:16px">Conecta Spotify y encuentra a gente que escucha lo mismo que tú.</p>' +
+      '<div class="list" style="gap:12px;font-size:14px">' +
+      ['Solo leemos tus artistas y canciones más escuchados.', 'Lo que suena ahora, solo si tú lo activas.', 'Tu ubicación es siempre aproximada.'].map(function (t) {
+        return '<div class="row" style="align-items:flex-start;gap:10px"><span style="color:var(--accent);flex:none;margin-top:2px">' + IC.check + '</span><span>' + t + '</span></div>';
+      }).join('') + '</div><div style="flex:1"></div>' +
+      '<button class="btn primary" data-act="import">Conectar con Spotify (demo)</button>' +
+      '<button class="btn" data-act="manual">Elegir mis canciones a mano</button>' +
+      '<p class="note">Demo: simula Spotify con canciones de ejemplo. Tus datos se quedan solo en este navegador.</p></div>';
+  }
+
+  function vPick() {
+    var n = S.draft.length;
+    var list = Object.keys(SONGS).map(function (id) {
+      var on = S.draft.indexOf(id) >= 0;
+      return '<button class="pick" aria-pressed="' + on + '" data-act="tog" data-id="' + id + '">' + art(id) +
+        '<span class="col"><span class="strong">' + esc(SONGS[id][0]) + '</span><span class="muted">' + esc(A[artistOf(id)].n) + '</span></span>' +
+        '<span class="check">' + (on ? IC.check : '') + '</span></button>';
+    }).join('');
+    var back = S.pickMode === 'profile' ? '<button class="icon-btn" data-act="back" aria-label="Volver">' + IC.back + '</button>' : '';
+    return top('<span class="muted" style="padding-right:8px" aria-live="polite">' + n + '/5</span>',
+      '<div class="row">' + back + '<h1 class="t" style="font-size:22px">Elige tus 5 canciones</h1></div>') +
+      '<div class="view"><div class="list">' + list + '</div></div>' +
+      '<div class="foot"><button class="btn primary" style="width:100%" data-act="savepick"' + (n < 3 ? ' disabled' : '') + '>' + (n < 3 ? 'Elige al menos 3' : 'Guardar y continuar') + '</button></div>';
+  }
+
+  function queue() {
+    return PEOPLE.filter(function (p) { return S.liked.indexOf(p.id) < 0 && S.passed.indexOf(p.id) < 0; })
+      .map(function (p) { return { p: p, aff: affinity(S.picks, p.picks) }; })
+      .sort(function (a, b) { return b.aff - a.aff; });
+  }
+
+  function vDiscover() {
+    var q = queue();
+    var body;
+    if (!q.length) {
+      body = '<div class="empty"><b>Has visto a todo el mundo</b><span>Vuelve más tarde o empieza de nuevo con las mismas personas.</span><button class="btn small" data-act="resetseen">Ver de nuevo</button></div>';
+    } else {
+      var p = q[0].p, aff = q[0].aff, sh = shared(S.picks, p.picks);
+      var rows = sh.tracks.slice(0, 3).map(function (s) { return trackRow(s, A[artistOf(s)].n + ' · canción'); });
+      sh.artists.slice(0, 3 - rows.length).forEach(function (a) {
+        var s = Object.keys(SONGS).filter(function (k) { return artistOf(k) === a; })[0];
+        rows.push(trackRow(s, 'Artista que ambos escucháis').replace(esc(SONGS[s][0]), esc(A[a].n)));
+      });
+      if (!rows.length) rows.push('<span class="muted">Ninguna canción en común. Puede ser una sorpresa.</span>');
+      body = '<div class="card"><div class="photo" style="background:' + p.c + '"><span class="initial" aria-hidden="true">' + esc(p.n[0]) + '</span>' +
+        '<span class="badge">' + aff + '% de afinidad</span></div><div class="pad">' +
+        '<div class="col"><h2 class="name" style="margin:0">' + esc(p.n) + ', ' + p.age + '</h2><span class="muted" style="font-size:14px">' + esc(p.job) + ' · a ' + (1 + PEOPLE.indexOf(p)) + ' km</span></div>' +
+        '<div class="list"><span class="label">Música en común</span>' + rows.join('') + '</div></div></div>' +
+        '<div class="actions"><button class="btn round" data-act="pass" data-id="' + p.id + '" aria-label="Pasar de ' + esc(p.n) + '">' + IC.x + '</button>' +
+        '<button class="btn primary" data-act="like" data-id="' + p.id + '">' + IC.heart + 'Hacer match</button></div>';
+    }
+    return top('<button class="icon-btn" aria-label="Filtros" data-act="filters">' +
+      '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg></button>') +
+      '<div class="view">' + body + '</div>';
+  }
+
+  function nearbyResults() {
+    var s = S.now, a = artistOf(s);
+    var exact = EVENTS.filter(function (e) { return e.s === s; });
+    var same = EVENTS.filter(function (e) { return e.s !== s && artistOf(e.s) === a; });
+    return { exact: exact, same: same };
+  }
+
+  function vNearby() {
+    var active = S.visible && S.share, r = nearbyResults();
+    var all = Object.keys(SONGS);
+    var mine = S.picks, rest = all.filter(function (k) { return mine.indexOf(k) < 0; });
+    function opts(ids) { return ids.map(function (k) { return '<option value="' + k + '"' + (k === S.now ? ' selected' : '') + '>' + esc(SONGS[k][0] + ' · ' + A[artistOf(k)].n) + '</option>'; }).join(''); }
+    var dots = '';
+    if (active) {
+      var items = r.exact.map(function (e) { return { e: e, hot: 1 }; }).concat(r.same.map(function (e) { return { e: e, hot: 0 }; }));
+      items.forEach(function (it, i) {
+        var ang = (i * 137.5 + 20) * Math.PI / 180, rad = Math.min(108, 22 + it.e.d / 1500 * 86);
+        var x = 125 + Math.cos(ang) * rad, y = 125 + Math.sin(ang) * rad;
+        dots += it.hot ? '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="13" fill="#C6F432" fill-opacity=".25"/><circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="6" fill="#C6F432"/>'
+          : '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="5" fill="#8B78D6"/>';
+      });
+    }
+    var radar = '<svg viewBox="0 0 250 250" width="220" height="220" role="img" aria-label="Radar de personas cerca" style="align-self:center;max-width:100%"><circle cx="125" cy="125" r="123" fill="none" stroke="#2E2740"/><circle cx="125" cy="125" r="82" fill="none" stroke="#2E2740"/><circle cx="125" cy="125" r="42" fill="#1B1626" stroke="#2E2740"/>' + dots + '<circle cx="125" cy="125" r="8" fill="#F4F1FA"/></svg>';
+    var list = '';
+    if (!active) {
+      list = '<div class="empty"><b>Estás en modo invisible</b><span>Para ver quién escucha lo mismo cerca, activa «Visible» y «Compartir lo que suena».</span><button class="btn small" data-act="goprofile">Ir a mis ajustes</button></div>';
+    } else if (!r.exact.length && !r.same.length) {
+      list = '<div class="empty"><b>Nadie cerca escucha esto</b><span>Prueba con otra canción de la lista de arriba.</span></div>';
+    } else {
+      r.exact.forEach(function (e) {
+        var p = person(e.p);
+        list += '<div class="panel hot">' + av(p, 48) + '<div class="col" style="flex:1"><span class="strong">' + esc(p.n) + ', ' + p.age + ' <span class="muted" style="font-weight:400">· ' + dist(e.d) + '</span></span>' +
+          '<span style="font-size:13px;color:var(--accent)">' + (e.m <= 5 ? 'Escucha tu misma canción ahora' : 'Escuchó esta canción hace ' + e.m + ' min') + '</span></div>' +
+          '<button class="btn primary small" data-act="nearmatch" data-id="' + p.id + '">Match</button></div>';
+      });
+      r.same.forEach(function (e) {
+        var p = person(e.p);
+        list += '<div class="panel">' + av(p, 48) + '<div class="col" style="flex:1"><span class="strong">' + esc(p.n) + ', ' + p.age + ' <span class="muted" style="font-weight:400">· ' + dist(e.d) + '</span></span>' +
+          '<span class="muted">Mismo artista: ' + esc(SONGS[e.s][0]) + ' hace ' + e.m + ' min</span></div>' +
+          '<button class="btn small" data-act="nearmatch" data-id="' + p.id + '">Match</button></div>';
+      });
+    }
+    return top('<div class="row" style="gap:6px;font-size:13px;color:var(--muted)"><span>Visible</span>' + sw('togvis', S.visible, 'Visible para gente cerca') + '</div>',
+      '<h1 class="t" style="font-size:24px">Cerca ahora</h1>') +
+      '<div class="view"><label class="label" for="nowsel">Suena ahora en tu Spotify</label>' +
+      '<select class="sel" id="nowsel" data-act="nowsel"><optgroup label="Mis canciones">' + opts(mine) + '</optgroup><optgroup label="Otras canciones">' + opts(rest) + '</optgroup></select>' +
+      radar + '<span class="note">Ubicación aproximada · celdas de ~1 km</span><div class="list">' + list + '</div></div>';
+  }
+
+  function lastLine(m) {
+    var p = person(m.pid);
+    if (m.msgs.length) { var l = m.msgs[m.msgs.length - 1]; return (l.from === 'me' ? 'Tú: ' : '') + l.text; }
+    return m.track ? 'Hicisteis match por ' + SONGS[m.track][0] : 'Hicisteis match. Rompe el hielo.';
+  }
+  function vMatches() {
+    var body;
+    if (!S.matches.length) {
+      body = '<div class="empty"><b>Aún no tienes matches</b><span>Dale a «Hacer match» en Descubrir o en Cerca ahora.</span><button class="btn small primary" data-act="tab" data-tab="discover">Ir a Descubrir</button></div>';
+    } else {
+      body = '<div class="list">' + S.matches.slice().reverse().map(function (m) {
+        var p = person(m.pid);
+        return '<button class="panel" style="width:100%;text-align:left;cursor:pointer;min-height:72px" data-act="openchat" data-id="' + m.id + '">' + av(p, 48) +
+          '<span class="col" style="flex:1"><span class="strong">' + esc(p.n) + ' <span class="muted" style="font-weight:400">· ' + m.pct + '%</span></span><span class="muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + esc(lastLine(m)) + '</span></span></button>';
+      }).join('') + '</div>';
+    }
+    return top('', '<h1 class="t" style="font-size:24px">Matches</h1>') + '<div class="view">' + body + '</div>';
+  }
+
+  function getMatch(id) { return S.matches.filter(function (m) { return m.id === id; })[0]; }
+  function vChat() {
+    var m = getMatch(S.chat); if (!m) return vMatches();
+    var p = person(m.pid);
+    var tip = m.track ? 'Os une «' + SONGS[m.track][0] + '». Pregúntale qué recuerdo le trae.' : 'Os une el estilo. Pregúntale qué está escuchando hoy.';
+    var bubbles = m.msgs.map(function (x) { return '<div class="bub ' + (x.from === 'me' ? 'me' : 'them') + '">' + esc(x.text) + '</div>'; }).join('');
+    return '<header class="top" style="border-bottom:1px solid var(--line)"><div class="row"><button class="icon-btn" data-act="back" aria-label="Volver">' + IC.back + '</button>' + av(p, 40) +
+      '<div class="col"><span class="strong" style="font-size:16px">' + esc(p.n) + '</span><span class="muted" style="font-size:12px">' + m.pct + '% de afinidad</span></div></div></header>' +
+      '<div class="view" style="padding-top:14px"><div class="msgs">' +
+      '<div class="sys"><span style="color:var(--accent)">' + IC.eq + '</span><span>Hicisteis match ' + (m.origin === 'cerca_ahora' ? 'cerca, escuchando' : 'por') + ' <b style="color:var(--fg)">' + esc(m.track ? SONGS[m.track][0] : 'afinidad') + '</b></span></div>' +
+      '<div class="card" style="border-radius:18px"><div class="pad" style="gap:4px;padding:14px"><span class="label">Para romper el hielo</span><span style="font-size:14px;line-height:1.4">' + esc(tip) + '</span></div></div>' + bubbles + '</div></div>' +
+      '<form class="chatform foot" id="chatform" autocomplete="off"><label for="msg" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Mensaje</label>' +
+      '<input id="msg" type="text" placeholder="Escribe un mensaje" maxlength="500"><button class="btn primary round" style="width:44px;height:44px;min-height:44px" aria-label="Enviar" type="submit">' + IC.send + '</button></form>';
+  }
+
+  function vProfile() {
+    var picks = S.picks.map(function (id, i) {
+      return '<div class="row" style="min-height:52px"><span style="width:18px;text-align:center;color:var(--accent);font:700 16px var(--font-display)">' + (i + 1) + '</span>' + art(id).replace('width:44px', '') +
+        '<div class="col" style="flex:1"><span class="strong">' + esc(SONGS[id][0]) + '</span><span class="muted">' + esc(A[artistOf(id)].n) + '</span></div>' +
+        '<button class="icon-btn" data-act="removepick" data-id="' + id + '" aria-label="Quitar ' + esc(SONGS[id][0]) + '">' + IC.x + '</button></div>';
+    }).join('');
+    var arts = uniq(S.picks.map(artistOf)).map(function (a) { return '<span class="chip">' + esc(A[a].n) + '</span>'; }).join('');
+    return top('<button class="btn small" style="border:0;color:var(--accent)" data-act="editpicks">Cambiar canciones</button>', '<h1 class="t" style="font-size:24px">Mi perfil</h1>') +
+      '<div class="view"><div class="row" style="gap:14px">' +
+      '<div class="av" style="width:64px;height:64px;border:2px solid var(--accent);color:var(--accent);background:var(--bg);font-size:28px" aria-hidden="true">T</div>' +
+      '<div class="col"><span class="name" style="font-size:22px">Tú</span><span class="muted" style="font-size:14px">Música para ir en bici y para después</span></div></div>' +
+      '<div class="panel" style="min-height:56px">' + (S.spotify ? '<span style="width:10px;height:10px;border-radius:50%;background:var(--accent)"></span><span style="flex:1;font-weight:500">Spotify conectado (demo)</span><button class="btn small" style="border:0;color:var(--muted)" data-act="disconnect">Desconectar</button>'
+        : '<span style="flex:1;font-weight:500">Spotify sin conectar</span><button class="btn small primary" data-act="connect">Conectar (demo)</button>') + '</div>' +
+      '<div class="list"><span class="label">Mis 5 canciones</span>' + (picks || '<span class="muted">Aún no hay canciones.</span>') + '</div>' +
+      '<div class="list"><span class="label">Mis artistas</span><div style="display:flex;flex-wrap:wrap;gap:8px">' + (arts || '<span class="muted">Sin artistas todavía.</span>') + '</div></div>' +
+      '<div class="list"><span class="label">Privacidad</span>' +
+      '<div class="row"><span style="flex:1">Visible para gente cerca</span>' + sw('togvis', S.visible, 'Visible para gente cerca') + '</div>' +
+      '<div class="row"><span style="flex:1">Compartir lo que suena</span>' + sw('togshare', S.share, 'Compartir lo que suena') + '</div></div>' +
+      '<button class="btn small" data-act="reset">Reiniciar la demo</button>' +
+      '<p class="note">Demo sin servidor: nada sale de este navegador.</p></div>';
+  }
+
+  function vOverlay() {
+    var m = getMatch(S.overlay), p = person(m.pid);
+    return '<div class="overlay" role="dialog" aria-label="Nuevo match"><div style="display:flex;justify-content:flex-end"><button class="icon-btn" data-act="closeov" aria-label="Cerrar" style="color:var(--on-accent)">' + IC.x + '</button></div>' +
+      '<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;text-align:center;padding:0 8px">' +
+      '<div style="display:flex" aria-hidden="true"><div class="av" style="width:104px;height:104px;background:var(--on-accent);color:var(--accent);font-size:44px;border:4px solid var(--accent)">T</div>' +
+      '<div class="av" style="width:104px;height:104px;background:' + p.c + ';font-size:44px;border:4px solid var(--accent);margin-left:-26px">' + esc(p.n[0]) + '</div></div>' +
+      '<div class="col" style="gap:8px;align-items:center"><h2 style="margin:0;font:700 50px/1 var(--font-display);letter-spacing:-2px">¡Sintonizáis!</h2><span style="font-size:17px">Tú y ' + esc(p.n) + ' coincidís en un ' + m.pct + '%.</span></div>' +
+      '<div style="width:100%;background:var(--on-accent);color:var(--fg);border-radius:20px;padding:14px;display:flex;align-items:center;gap:12px;text-align:left">' +
+      (m.track ? art(m.track).replace('width:44px', '') + '<div class="col"><span class="label">Vuestra canción</span><span class="strong" style="font-size:16px">' + esc(SONGS[m.track][0]) + '</span><span class="muted">' + esc(A[artistOf(m.track)].n) + '</span></div>'
+        : '<div class="col"><span class="label">Os une</span><span class="strong">El estilo de vuestra música</span></div>') + '</div></div>' +
+      '<div class="list" style="gap:8px"><button class="btn dark" data-act="ovchat">Enviar mensaje</button><button class="btn ghost" data-act="closeov">Seguir descubriendo</button></div></div>';
+  }
+
+  /* ---------- Render ---------- */
+  var appEl = document.getElementById('app');
+  var lastScreen = null, toastTimer = null;
+  function tabbar() {
+    var tabs = [['discover', 'Descubrir', IC.heart.replace('width="22" height="22"', 'width="24" height="24"').replace('stroke-width="2"', 'stroke-width="1.8"')], ['nearby', 'Cerca', IC.pin], ['matches', 'Matches', IC.chat], ['profile', 'Perfil', IC.user]];
+    return '<nav class="tabbar" aria-label="Principal">' + tabs.map(function (t) {
+      var cnt = t[0] === 'matches' && S.matches.length ? '<span class="count" aria-label="' + S.matches.length + ' matches">' + S.matches.length + '</span>' : '';
+      return '<button class="tab" data-act="tab" data-tab="' + t[0] + '"' + (S.screen === t[0] ? ' aria-current="page"' : '') + '>' + t[2] + '<span>' + t[1] + '</span>' + cnt + '</button>';
+    }).join('') + '</nav>';
+  }
+  function render() {
+    var prev = appEl.querySelector('.view'), keep = prev && lastScreen === S.screen ? prev.scrollTop : 0;
+    var html = '', withTabs = false;
+    switch (S.screen) {
+      case 'onboard': html = vOnboard(); break;
+      case 'pick': html = vPick(); break;
+      case 'discover': html = vDiscover(); withTabs = true; break;
+      case 'nearby': html = vNearby(); withTabs = true; break;
+      case 'matches': html = vMatches(); withTabs = true; break;
+      case 'chat': html = vChat(); break;
+      case 'profile': html = vProfile(); withTabs = true; break;
+    }
+    appEl.innerHTML = html + (withTabs ? tabbar() : '') + (S.overlay ? vOverlay() : '');
+    var v = appEl.querySelector('.view');
+    if (v) { if (S.screen === 'chat') v.scrollTop = v.scrollHeight; else v.scrollTop = keep; }
+    lastScreen = S.screen;
+    save();
+  }
+  function toast(t) {
+    var old = appEl.querySelector('.toast'); if (old) old.remove();
+    var el = document.createElement('div'); el.className = 'toast'; el.setAttribute('role', 'status'); el.textContent = t; appEl.appendChild(el);
+    clearTimeout(toastTimer); toastTimer = setTimeout(function () { el.remove(); }, 2200);
+  }
+  function go(screen) { S.screen = screen; render(); }
+
+  function mkMatch(p, origin, track) {
+    var ex = S.matches.filter(function (m) { return m.pid === p.id; })[0];
+    if (ex) { S.overlay = ex.id; return ex; }
+    var sh = shared(S.picks, p.picks);
+    var m = { id: 'm' + Date.now(), pid: p.id, origin: origin, track: track || sh.tracks[0] || null, pct: affinity(S.picks, p.picks), msgs: [] };
+    S.matches.push(m); S.overlay = m.id; return m;
+  }
+
+  /* ---------- Eventos ---------- */
+  appEl.addEventListener('click', function (e) {
+    var el = e.target.closest('[data-act]'); if (!el || el.tagName === 'SELECT') return;
+    var act = el.getAttribute('data-act'), id = el.getAttribute('data-id');
+    switch (act) {
+      case 'import': S.picks = ['s1', 's3', 's5', 's19', 's15']; S.spotify = true; S.now = 's1'; go('discover'); toast('Importadas 5 canciones de ejemplo'); break;
+      case 'manual': S.draft = S.picks.slice(); S.pickMode = 'onboard'; go('pick'); break;
+      case 'editpicks': S.draft = S.picks.slice(); S.pickMode = 'profile'; go('pick'); break;
+      case 'tog':
+        var i = S.draft.indexOf(id);
+        if (i >= 0) S.draft.splice(i, 1); else if (S.draft.length < 5) S.draft.push(id); else { toast('Máximo 5 canciones'); return; }
+        render(); break;
+      case 'savepick': S.picks = S.draft.slice(); if (S.picks.indexOf(S.now) < 0) S.now = S.picks[0]; go(S.pickMode === 'profile' ? 'profile' : 'discover'); break;
+      case 'back': go(S.screen === 'chat' ? 'matches' : 'profile'); break;
+      case 'tab': go(el.getAttribute('data-tab')); break;
+      case 'goprofile': go('profile'); break;
+      case 'filters': toast('Filtros: pendiente en la versión real'); break;
+      case 'pass': S.passed.push(id); render(); break;
+      case 'like':
+        var p = person(id); S.liked.push(id);
+        if (p.back) { mkMatch(p, 'afinidad'); render(); } else { toast('Like enviado a ' + p.n); render(); }
+        break;
+      case 'resetseen': S.liked = []; S.passed = []; render(); break;
+      case 'nearmatch': mkMatch(person(id), 'cerca_ahora', S.now); render(); break;
+      case 'togvis': S.visible = !S.visible; render(); break;
+      case 'togshare': S.share = !S.share; render(); break;
+      case 'openchat': S.chat = id; go('chat'); break;
+      case 'closeov': S.overlay = null; render(); break;
+      case 'ovchat': S.chat = S.overlay; S.overlay = null; go('chat'); break;
+      case 'removepick': S.picks = S.picks.filter(function (x) { return x !== id; }); render(); break;
+      case 'connect': S.spotify = true; render(); toast('Spotify conectado (demo)'); break;
+      case 'disconnect': S.spotify = false; render(); break;
+      case 'reset': S = defaults(); lastScreen = null; render(); break;
+    }
+  });
+  appEl.addEventListener('change', function (e) {
+    if (e.target.id === 'nowsel') { S.now = e.target.value; render(); var s = appEl.querySelector('#nowsel'); if (s) s.focus(); }
+  });
+  appEl.addEventListener('submit', function (e) {
+    if (e.target.id !== 'chatform') return;
+    e.preventDefault();
+    var inp = appEl.querySelector('#msg'), t = inp.value.trim(), m = getMatch(S.chat);
+    if (!t || !m) return;
+    m.msgs.push({ from: 'me', text: t });
+    var cid = m.id; render(); appEl.querySelector('#msg').focus();
+    setTimeout(function () {
+      var mm = getMatch(cid); if (!mm) return;
+      mm.msgs.push({ from: 'them', text: REPLIES[mm.msgs.length % REPLIES.length] });
+      save(); if (S.screen === 'chat' && S.chat === cid) { var val = (appEl.querySelector('#msg') || {}).value || ''; render(); var n = appEl.querySelector('#msg'); n.value = val; }
+    }, 1100);
+  });
+
+  render();
+})();
+</script>
+
+</body>
+</html>
